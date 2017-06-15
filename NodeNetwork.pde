@@ -56,7 +56,7 @@ void draw() {
   connectParticles();
   
   // Create particles
-  //addParticles();
+  addParticles();
   
   // Remove particles if frameRate gets too slow
   removeParticles();  
@@ -123,8 +123,12 @@ void connectParticles() {
 
 void addParticles() {
   currentHue = random(0, 255);
+  PVector point = tracker.getHighestPoint();
+  float xMap = map(point.x, 0, tracker.kinect2.depthWidth, 0, width);
+  float yMap = map(point.y, 0, tracker.kinect2.depthHeight, 0, height);
+  
   if (frameCount % 2 == 0) {
-    allParticles.add(new Particle(width / 2, height / 2));
+    allParticles.add(new Particle(width - xMap,  yMap));
   }
 }
 

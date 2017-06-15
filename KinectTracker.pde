@@ -108,6 +108,10 @@ class KinectTracker {
   PVector getPos() {
     return loc;
   }
+  
+  PVector getHighestPoint() {
+    return new PVector(hx, hy);
+  }
 
   void display() {
     PImage img = kinect2.getDepthImage();
@@ -143,6 +147,12 @@ class KinectTracker {
         }
       }
     }
+    
+    // Show where the highestPoint is
+    fill(255, 255, 255);
+    float mapX = map(hx, 0, kinect2.depthWidth, 0, width);
+    float mapY = map(hy, 0, kinect2.depthHeight, 0, width);
+    ellipse(width - mapX, mapY, 25, 25);
     
     display.updatePixels();
 
