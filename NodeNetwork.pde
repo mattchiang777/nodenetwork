@@ -45,40 +45,44 @@ void draw() {
   // Show the image
   tracker.display();
   
-  // Let's draw the raw location
-  PVector v1 = tracker.getPos();
-  //fill(50, 100, 250, 200);
-  noStroke();
-  //ellipse(v1.x, v1.y, 20, 20);
-
-  // Let's draw the "lerped" location
-  PVector v2 = tracker.getLerpedPos();
-  //fill(100, 250, 50, 200);
-  fill(255, 0, 0);
-  noStroke();
-  int xMapped = (int) map(v2.x, 0, 512, 0, width);
-  int yMapped = (int) map(v2.y, 0, 424, 0, height);
-  ellipse(width - xMapped, yMapped, 5, 5);
-  //ellipse(v2.x, v2.y, 20, 20);
-  
-  
-  // Display closest point
-  int closestXMapped = (int) map(tracker.cX, 0, 512, 0, width);
-  int closestYMapped = (int) map(tracker.cY, 0, 424, 0, width);
-  //ellipse(width - closestXMapped, closestYMapped, 50, 50);
-  
-  // Display highest point
-  fill(255);
-  println(tracker.hx, tracker.hy, tracker.highestValue);
-  ellipse(width - map(tracker.hx, 0, 512, 0, width), map(tracker.hy, 0, 424, 0, height), 50, 50);
-  
 
   // Display some info
+  displayInfo();
+  
+  // Set particle node size and velocity limits
+  moveParticles();
+  
+  // Draw lines between particle nodes
+  connectParticles();
+  
+  // Create particles
+  addParticles();
+  
+  // Remove particles if frameRate gets too slow
+  removeParticles();  
+}
+
+void keyPressed() {
+  int t = tracker.getThreshold();
+  if (key == CODED) {
+    if (keyCode == UP) {
+      t +=5;
+      tracker.setThreshold(t);
+    } else if (keyCode == DOWN) {
+      t -=5;
+      tracker.setThreshold(t);
+    }
+  }
+}
+
+void displayInfo() {
   int t = tracker.getThreshold();
   fill(255);
   text("threshold: " + t + "    " +  "framerate: " + int(frameRate) + "    " +
     "UP increase threshold, DOWN decrease threshold" + "closestValue: " + tracker.closestValue, 10, 10);
-  
+}
+
+void moveParticles() {
   for (int i = allParticles.size()-1; i > -1; i--) {
     Particle p = allParticles.get(i);
     p.move();
@@ -94,8 +98,10 @@ void draw() {
       allParticles.remove(p);
     }
   }
-  
-  for (int i = 0; i < allParticles.size(); i++) {
+}
+
+void connectParticles() {
+    for (int i = 0; i < allParticles.size(); i++) {
     Particle p1 = allParticles.get(i);
     for (int j = 0; j < allParticles.size(); j++) {
       Particle p2 = allParticles.get(j);
@@ -113,30 +119,21 @@ void draw() {
       }
     }
   }
-  
+}
+
+void addParticles() {
   currentHue = random(0, 255);
-  if (frameCount % 2 == 0 && tracker.closestValue >= 600) {
-    allParticles.add(new Particle(width - xMapped, yMapped));
+  if (frameCount % 2 == 0) {
+    allParticles.add(new Particle(width / 2, height / 2));
   }
-  
+}
+
+void removeParticles() {
   // Clear screen if frameRate gets too slow
   if (frameRate <= 5) {
     for (int i = allParticles.size()-1; i > -1; i--) {
       Particle p = allParticles.get(i);
       allParticles.remove(p);
-    }
-  }
-}
-
-void keyPressed() {
-  int t = tracker.getThreshold();
-  if (key == CODED) {
-    if (keyCode == UP) {
-      t +=5;
-      tracker.setThreshold(t);
-    } else if (keyCode == DOWN) {
-      t -=5;
-      tracker.setThreshold(t);
     }
   }
 }
