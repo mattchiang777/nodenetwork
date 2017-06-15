@@ -10,7 +10,7 @@ class KinectTracker {
 
   // Depth threshold
   int minThreshold = 500;
-  int maxThreshold = 745;
+  int maxThreshold = 750;
   //int threshold = 1930;
 
   // Raw location
@@ -78,7 +78,7 @@ class KinectTracker {
         int rawDepth = depth[offset];
 
         // Testing against threshold
-        if (rawDepth > minThreshold && rawDepth < maxThreshold && x > 100 && y > 50) {
+        if (rawDepth > minThreshold && rawDepth < maxThreshold && x > 50 && y > 50) {
           sumX += x;
           sumY += y;
           count++;
@@ -87,7 +87,9 @@ class KinectTracker {
           updateClosest(x, y, rawDepth);
           
           // update highest point
-          updateHighest(x, y);
+          if (closestValue > minThreshold && closestValue < maxThreshold) {
+            updateHighest(x, y);
+          }
         }
       }
     }
@@ -111,6 +113,19 @@ class KinectTracker {
   
   PVector getHighestPoint() {
     return new PVector(hx, hy);
+  }
+  
+  int getHighestValue() {
+    return highestValue;
+  }
+  
+  // Very shaky because of stray pixels
+  PVector getClosestPoint() {
+    return new PVector(cX, cY);
+  }
+  
+  int getClosestValue() {
+    return closestValue;
   }
 
   void display() {
@@ -139,8 +154,9 @@ class KinectTracker {
         
         if (rawDepth > minThreshold && rawDepth < maxThreshold) {
           // A red color instead
-          //display.pixels[pix] = color(150, 50, 50);
-          display.pixels[pix] = color(map(rawDepth, minThreshold, maxThreshold, 106, 127), map(rawDepth, minThreshold, maxThreshold, 0, 35), 255);
+          display.pixels[pix] = color(150, 50, 50);
+          //display.pixels[pix] = color(map(rawDepth, minThreshold, maxThreshold, 106, 127), map(rawDepth, minThreshold, maxThreshold, 0, 35), 255);
+          
         } else {
           //display.pixels[pix] = img.pixels[offset];
           display.pixels[pix] = color(0, 0, 0);
@@ -148,13 +164,16 @@ class KinectTracker {
       }
     }
     
-    // Show where the highestPoint is
-    fill(255, 255, 255);
-    float mapX = map(hx, 0, kinect2.depthWidth, 0, width);
-    float mapY = map(hy, 0, kinect2.depthHeight, 0, width);
-    ellipse(width - mapX, mapY, 25, 25);
-    
     display.updatePixels();
+    
+    if (closestValue > minThreshold && closestValue < maxThreshold) {
+      // Show where the highestPoint is
+      //image(kinect2.getDepthImage(), 0, 0);
+      fill(255, 255, 255);
+      float mapX = map(hx, 0, kinect2.depthWidth, 0, width);
+      float mapY = map(hy, 0, kinect2.depthHeight, 0, height);
+      ellipse(width - mapX, mapY, 10, 10);
+    }
 
     // Draw the image
     image(display, 0, 0);
