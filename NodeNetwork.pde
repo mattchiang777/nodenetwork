@@ -56,7 +56,7 @@ void draw() {
   connectParticles();
   
   // Create particles
-  addParticles();
+  //addParticles();
   
   // Remove particles if frameRate gets too slow
   removeParticles();  

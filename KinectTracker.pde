@@ -1,6 +1,7 @@
 // Daniel Shiffman
 // Tracking the average location beyond a given depth threshold
 // Thanks to Dan O'Sullivan
+// Track and display eyes using OpenCV and the Kinect2 camera
 
 // https://github.com/shiffman/OpenKinect-for-Processing
 // http://shiffman.net/p5/kinect/
@@ -42,13 +43,12 @@ class KinectTracker {
     //enable Kinect2
     kinect2 = new Kinect2(pa);
     kinect2.initDepth();
+    kinect2.initVideo();
     kinect2.initDevice();
     
     // Make a blank image
     //display = createImage(kinect2.depthWidth, kinect2.depthHeight, RGB);
     display = createImage(width, height, RGB);
-    println(kinect2.depthWidth, kinect2.depthHeight);
-    println(width, height);
     
     // Set up the vectors
     loc = new PVector(0, 0);
@@ -135,11 +135,11 @@ class KinectTracker {
         
         if (rawDepth > minThreshold && rawDepth < maxThreshold) {
           // A red color instead
-          display.pixels[pix] = color(150, 50, 50);
-          //display.pixels[pix] = color(255, 255, 255);
+          //display.pixels[pix] = color(150, 50, 50);
+          display.pixels[pix] = color(map(rawDepth, minThreshold, maxThreshold, 106, 127), map(rawDepth, minThreshold, maxThreshold, 0, 35), 255);
         } else {
-          display.pixels[pix] = img.pixels[offset];
-          //display.pixels[pix] = color(0, 0, 0);
+          //display.pixels[pix] = img.pixels[offset];
+          display.pixels[pix] = color(0, 0, 0);
         }
       }
     }
